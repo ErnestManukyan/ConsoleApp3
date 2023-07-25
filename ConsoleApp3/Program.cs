@@ -498,7 +498,7 @@ namespace ConsoleApp3
 
                         string jsonFilePath = Path.Combine(folderName, $"{location}.json");
 
-                        File.WriteAllText(jsonFilePath, jsonData.ToString());
+                        File.AppendAllText(jsonFilePath, Environment.NewLine + item.ToString());
                     }
 
                 }
