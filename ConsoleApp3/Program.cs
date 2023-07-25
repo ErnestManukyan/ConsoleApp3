@@ -25,6 +25,7 @@ namespace ConsoleApp3
     class Location
     {
         public string State { get; set; }
+        public string Region { get; set; }
 
         public List<string> Cities { get; set; }
     }
@@ -325,6 +326,7 @@ namespace ConsoleApp3
 
             var californiaGreaterLA = new Location()
             {
+                Region = "California",
                 State = "California/Greater LA",
                 Cities = new List<string>()
                 {
@@ -382,16 +384,16 @@ namespace ConsoleApp3
                 Cities = new List<string>()
                 {
 
-"Playa Del Ray"
-,"Manhattan Beach"
-,"Redondo Beach"
-,"Hermosa Beach"
-,"Torrance"
-,"Gardena"
-,"Rancho Palos Verdes"
-,"Rolling Hills"
-,"Palos Verdes Estates"
-,"Rolling Hills Estates"
+                "Playa Del Ray"
+                ,"Manhattan Beach"
+                ,"Redondo Beach"
+                ,"Hermosa Beach"
+                ,"Torrance"
+                ,"Gardena"
+                ,"Rancho Palos Verdes"
+                ,"Rolling Hills"
+                ,"Palos Verdes Estates"
+                ,"Rolling Hills Estates"
 
 
                 }
@@ -450,24 +452,39 @@ namespace ConsoleApp3
         {
             for (int i = 0; i < location.Cities.Count; i++)
             {
-                await GetDataAndCreateFile(location.State, location.Cities[i]);
+                await GetDataAndCreateFile(location.State, location.Cities[i], location.Region);
             }
         }
 
-        static async Task GetDataAndCreateFile(string folderName, string location)
+        static async Task GetDataAndCreateFile(string folderName, string location, string region)
         {
             FacebookApi facebookApi = new FacebookApi();
             string accessToken = "EAAGGzHk3fQIBAKNbQqGYhtZBUNrNwZAci7MRhauY76hZARx0QyZBkiZBzBU1gzP4mj9mUZAmlXRchudfMYXZCLOUJC0D4drTZCIi2NayZCKXHHk6n6vb3B4E8kVrzw0lYr6MtbtRkfHOXwHQxHhitV5MQjbVlM1ZB7qWixHdBMq7VBAjxf7vhT0TUD"; // Replace this with the actual access token
             string response = await facebookApi.GetFacebookData(location, accessToken);
-            var jsonData = JObject.Parse(response)["data"];
+            var jsonObject = JObject.Parse(response);
 
-            if (!Directory.Exists(folderName))
+            if (jsonObject["data"] is JArray jsonData)
             {
-                Directory.CreateDirectory(folderName);
+                foreach (JToken item in jsonData)
+                {
+                    if (item["region"].ToString() == region)
+                    {
+                        if (!Directory.Exists(folderName))
+                        {
+                            Directory.CreateDirectory(folderName);
+                        }
+
+                        string jsonFilePath = Path.Combine(folderName, $"{location}.json");
+
+                        File.WriteAllText(jsonFilePath, jsonData.ToString());
+                    }
+
+                }
             }
 
-            string jsonFilePath = Path.Combine(folderName, $"{location}.json");
-            File.WriteAllText(jsonFilePath, jsonData.ToString());
+
+
+
 
         }
     }
