@@ -38,6 +38,7 @@ namespace ConsoleApp3
             var houston = new Location()
             {
                 State = "Houston",
+                Region = "Houston",
                 Cities = new List<string>()
                             {
                                  "Bellaire"
@@ -63,6 +64,7 @@ namespace ConsoleApp3
             var dallas = new Location()
             {
                 State = "Dallas",
+                Region = "Dallas",
                 Cities = new List<string>()
                             {
             "Allen"
@@ -103,6 +105,7 @@ namespace ConsoleApp3
             var austin = new Location()
             {
                 State = "Austin",
+                Region = "Austin",
                 Cities = new List<string>()
                             {
 
@@ -138,6 +141,7 @@ namespace ConsoleApp3
             var westchester = new Location()
             {
                 State = "Westchester",
+                Region = "Westchester",
                 Cities = new List<string>()
                             {
             "Mahopac"
@@ -160,6 +164,7 @@ namespace ConsoleApp3
             var massachusetts = new Location()
             {
                 State = "Massachusetts",
+                Region = "Massachusetts",
                 Cities = new List<string>()
                                 {
                                 "Boston"
@@ -175,6 +180,7 @@ namespace ConsoleApp3
             var coloradoAspen = new Location()
             {
                 State = "Colorado/Aspen",
+                Region = "Colorado",
                 Cities = new List<string>()
                 {
 "McLain Flats"
@@ -197,6 +203,7 @@ namespace ConsoleApp3
             var coloradoSnowmass = new Location()
             {
                 State = "Colorado/Snowmass",
+                Region = "Colorado",
                 Cities = new List<string>()
                 {
 "Old Snowmass"
@@ -209,6 +216,7 @@ namespace ConsoleApp3
             var coloradoDownValley = new Location()
             {
                 State = "Colorado/Down Valley",
+                Region = "Colorado",
                 Cities = new List<string>()
                 {
 "Basalt Proper"
@@ -229,6 +237,7 @@ namespace ConsoleApp3
             var coloradoDenver = new Location()
             {
                 State = "Colorado/Denver",
+                Region = "Colorado",
                 Cities = new List<string>()
                 {
 
@@ -254,6 +263,7 @@ namespace ConsoleApp3
             var coloradoBoulder = new Location()
             {
                 State = "Colorado/Boulder",
+                Region = "Colorado",
                 Cities = new List<string>()
                 {
 
@@ -274,6 +284,7 @@ namespace ConsoleApp3
             var nevadaLasVegas = new Location()
             {
                 State = "Nevada/Las Vegas",
+                Region = "Nevada",
                 Cities = new List<string>()
                 {
 
@@ -294,6 +305,7 @@ namespace ConsoleApp3
             var nevadaHenderson = new Location()
             {
                 State = "Nevada/Henderson",
+                Region = "Nevada",
                 Cities = new List<string>()
                 {
 
@@ -312,6 +324,7 @@ namespace ConsoleApp3
             var nevadaNorthLasVegas = new Location()
             {
                 State = "Nevada/North Las Vegas",
+                Region = "Nevada",
                 Cities = new List<string>()
                 {
 
@@ -363,6 +376,7 @@ namespace ConsoleApp3
             var californiaLAWestside = new Location()
             {
                 State = "California/LA Westside",
+                Region = "California",
                 Cities = new List<string>()
                 {
 "Beverly Hills"
@@ -381,6 +395,7 @@ namespace ConsoleApp3
             var californiaLASouthbay = new Location()
             {
                 State = "California/LA Southbay",
+                Region = "California",
                 Cities = new List<string>()
                 {
 
@@ -406,6 +421,7 @@ namespace ConsoleApp3
             var californiaOrangeCounty = new Location()
             {
                 State = "California/Orange County",
+                Region = "California",
                 Cities = new List<string>()
                 {
 
@@ -439,6 +455,7 @@ namespace ConsoleApp3
             var californiaSanDiego = new Location()
             {
                 State = "California/San Diego",
+                Region = "California",
                 Cities = new List<string>()
                 {
                     "San Diego County"
@@ -463,11 +480,16 @@ namespace ConsoleApp3
             string response = await facebookApi.GetFacebookData(location, accessToken);
             var jsonObject = JObject.Parse(response);
 
+            if(region == null)
+            {
+                throw new Exception();
+            }
+
             if (jsonObject["data"] is JArray jsonData)
             {
                 foreach (JToken item in jsonData)
                 {
-                    if (item["region"].ToString() == region)
+                    if (item["region"].ToString().ToLower() == region.ToLower())
                     {
                         if (!Directory.Exists(folderName))
                         {
