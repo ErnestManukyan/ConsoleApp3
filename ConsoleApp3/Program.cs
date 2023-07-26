@@ -2,12 +2,15 @@
 
 namespace ConsoleApp3
 {
+    using ClosedXML.Excel;
+    using DocumentFormat.OpenXml.Spreadsheet;
     using Newtonsoft.Json.Linq;
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Drawing;
     using System.IO;
+    using System.Linq;
     using System.Net.Http;
     using System.Numerics;
     using System.Reflection;
@@ -35,6 +38,8 @@ namespace ConsoleApp3
     {
         static async Task Main(string[] args)
         {
+
+
             var houston = new Location()
             {
                 State = "Houston",
@@ -480,7 +485,7 @@ namespace ConsoleApp3
             string response = await facebookApi.GetFacebookData(location, accessToken);
             var jsonObject = JObject.Parse(response);
 
-            if(region == null)
+            if (region == null)
             {
                 throw new Exception();
             }
@@ -499,6 +504,10 @@ namespace ConsoleApp3
                         string jsonFilePath = Path.Combine(folderName, $"{location}.json");
 
                         File.AppendAllText(jsonFilePath, Environment.NewLine + item.ToString());
+
+                        AddKeyAndNameToExcel("data.xlsx", folderName, item["key"].ToString(), item["name"].ToString());
+
+
                     }
 
                 }
@@ -508,6 +517,30 @@ namespace ConsoleApp3
 
 
 
+        }
+
+        public static void AddKeyAndNameToExcel(string filePath, string sheetName, string key, string name)
+        {
+            sheetName = sheetName.Replace("/", "-");
+            // Open the workbook
+            using (var workbook = new XLWorkbook(filePath))
+            {
+                // Check if the sheet exists
+                var sheet = workbook.Worksheets.FirstOrDefault(s => s.Name == sheetName);
+                if (sheet == null)
+                {
+                    // If the sheet doesn't exist, create a new one
+                    sheet = workbook.Worksheets.Add(sheetName);
+                }
+
+                // Add the key and name to the sheet
+                int nextRow = sheet.LastRowUsed()?.RowNumber() + 1 ?? 1;
+                sheet.Cell(nextRow, 1).Value = key;
+                sheet.Cell(nextRow, 2).Value = name;
+
+                // Save the changes back to the file
+                workbook.Save();
+            }
         }
     }
 
